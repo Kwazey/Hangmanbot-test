@@ -341,3 +341,4 @@ healthchecksdb
 
 #Temporary files
 Vab/DiscordBot/Stats/*
+DiscordBot/index.js

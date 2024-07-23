@@ -6,7 +6,7 @@ const token = 'NzIxNDMzNjYzNTMwODYwNjA1.XuUdoQ.4CDMQWndRy526YtMBi01a8L-OIA';
 const fs = require('fs');
 
 
-
+// -----------------Not being used--------------------------------//
 Word_list = ['exploit', 'word', 'biology', 'road', 'flight', 'tell', 'fantasy', 'charm', 'am', 'overcharge',
     'promote', 'notebook', 'soil', 'fibre', 'migration', 'sour', 'rotation', 'roll', 'manual', 'run', 'auction',
     'reporter', 'toss', 'solution', 'privilege', 'ditch', 'institution', 'correspond', 'distance',
@@ -19,6 +19,7 @@ Word_list = ['exploit', 'word', 'biology', 'road', 'flight', 'tell', 'fantasy', 
     'agreement', 'foundation', 'character', 'fling', 'lend', 'list', 'mug', 'encourage', 'paint', 'predict',
     'south', 'quote', 'glance', 'designer', 'contrary', 'ambiguous', 'profound', 'theorist', 'activity'
     , 'register', 'convince', 'deprivation', 'sacrifice', 'vertical']
+//------------------------------------------------------------------------//
 
 var svits = 0   // Switch
 var Img;        // Current picture
@@ -36,7 +37,8 @@ var res;        // res
 var pos;        // Position used when.. position
 var Dif = 0;    // Difficulty
 var Tries;      // Amount of guesses
-var banone;
+var Word_list_big; // Bigger world list from file
+var C_Channel;
 
 
 
@@ -159,7 +161,7 @@ function check_if_correct(str) {
 }
 
 function dash_fill() {
-    Word_o[pos] = '-'; 
+    Word_o[pos] = '.'; 
     pos++;
 }
 
@@ -224,9 +226,9 @@ function Num_Tries() {
 
 function Randomize(String) {
     //val = Math.floor((Math.random() * 109) + 1); // If using Word_list
-    val = Math.floor((Math.random() * 58108) + 1); // if using banone
+    val = Math.floor((Math.random() * 58108) + 1); // if using Word_list_big
     console.log(val);
-    String = banone[val]; // can use banone or Word_list
+    String = Word_list_big[val]; // can use Word_list_big or Word_list
     console.log('random word is', String);
     return String;
     
@@ -341,7 +343,7 @@ function reset() {
 }
 
 Bot.once('ready', () => {
-    banone = fs.readFileSync('Wordlist.txt', 'utf8').split("\r\n"); //use .split() to chose a character to define where a new piece of data starts
+    Word_list_big = fs.readFileSync('Wordlist.txt', 'utf8').split("\r\n"); //use .split() to chose a character to define where a new piece of data starts
     Bot.guilds;
     console.log('This bot is online');
     console.log('Stage is: ', Stage);
@@ -364,12 +366,16 @@ Bot.on('message', msg => {
 
         case 'start':
             if (Stage != 1) {                   // If a game is not already in progress
-                msg.delete();
                 Err_check(args[1]);             // Need to control that args is not numbers of foreign signs
                 if (Stage != 5) {               // If tings did not go wrong
                     Tries = Difficulty();
-                    console.log('TRies is is ', Tries);
-                    //console.log('we in dis bish');
+                    console.log('TRies is ', Tries);
+                    //console.log('we in dis');
+                    if(msg.channel.type =='dm' && msg.author.username == aut){
+                        C_Channel = chn;
+                        svits = 2;
+                        chn.send(aut + 'Has started a game of Hangman!')
+                    }
                     if (args[1] == "random") {  // If random then get random word
                         args[1] = Randomize(args[1]);
                         svits = 1
@@ -377,8 +383,10 @@ Bot.on('message', msg => {
 
                     }
                     Strong = args[1];
-                    if (svits == 0) {           // If manual word
+                    if (svits == 0) {  
+                        msg.delete();         // If manual word
                         //console.log('HEEEJ')
+                        C_Channel = msg.channel;
                         msg.reply('Has started a game of Hangman!');
                     }
                     Word = Strong.split("");
@@ -386,16 +394,21 @@ Bot.on('message', msg => {
                     pos = 0;
                     Word_o.forEach(dash_fill);
                     Hangman((msg.author.username));
-                    msg.channel.send(Word_o.join(" "));
-                    msg.channel.send('Guess a letter with !guess');
+                    console.log(Word_o.join(" "));
+
+                    setTimeout(() => { 
+                    C_Channel.send("---------------1 Second delay----------------")
+                    C_Channel.send(Word_o.join(" "));
+                    C_Channel.send('Guess a letter with !guess');
+                    }, 1000);
                 }
                 else {
-                    msg.channel.send('The word cannot be empty and has to be letters only!');
+                    C_Channel.send('The word cannot be empty and has to be letters only!');
                     Stage = 0;
                 }
             }
             else {
-                msg.channel.send('You cannot start a new game when another game is in progress!');
+                C_Channel.send('You cannot start a new game when another game is in progress!');
             }
             break;
 
@@ -570,86 +583,46 @@ Bot.on('message', msg => {
                 msg.reply('No')
             }
 
-
+//------------------ NOT REALLY RELATED TO HANGMAN-------------------------------//
         case 'tstart':
            if(args[1] == 'DM'){
-            console.log('tstart')
-            aut = msg.author
-           autu = msg.author.username
-           ch = msg.channel
-           chn = msg.channel.name
-           gu = msg.guild
+        console.log('tstart')
+           aut = msg.author.username
+           chn = msg.channel
            msg.author.send('write your word')
 
            }
-           /*
-         if(msg.author==aut && msg.channel.type=='DM'){
-             msg.ch.send(msg.content)
-             console.log('tings')
-            }
-             */   
         
         console.log('we out')
            break;
 
         case'test':
         console.log('test')
+        ass = msg.channel.id
         //console.log(Bot.guilds.fetch(options))
-        var spods = (Bot.guilds.cache.get('721434155753406474')).channels.cache.get('721503966483185725')
+        var spods = (Bot.guilds.cache.get('721434155753406474')).channels.cache.get(ass)
         console.log(spods)
         spods.send('gg')
        // hods = spods.channels.cache.get(msg.channelid)
         //console.log(war1.channel)
         console.log('end')
         break;
-        
+
+        case'testt':
+        ass = msg.channel.id
+        console.log(ass)
+        break;
+           
 
     }
-    if(msg.channel.type =='dm' && msg.author.username == autu){
-    ch.send(msg.content)
-    //msg.channel.send('hejj')
-
-    console.log('We did something!!!!!!!!!1-------------')}
 
 })
 
-/*
-Bot.on('message', msg => {
-    console.log('------------------------------------------')
-    //console.log(msg.type)
-    //console.log(msg.channel)
-    //console.log(msg.author)
-    console.log(msg.channel.type)
-    //console.log(msg.id)
-    console.log(msg.author.username)
-    console.log(msg.channel.name)
-    if(msg.guild!==null)
-    console.log(msg.guild.name)
-    else
-    console.log(msg.guild)
-    console.log('------------------------------------------')
-})
-*/
 
-
-/*
-Bot.on('message', msg => {
-        console.log(msg.type)
-        console.log(msg.channel.type)
-        console.log(msg.author)
-        console.log(msg.guild.name)
-        console.log(msg.channel.name)
-})
-*/
 
 Bot.on('message', msg => {
     if (msg.content === "HELLO") {
         msg.reply('HELLO FRIEND!');
-        //console.log(msg.channel)
-        //console.log(msg.type)
-        //console.log(msg.channel.type)
-        //console.log(msg.author)
-        
     }
 })
 
