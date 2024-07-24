@@ -1,8 +1,8 @@
 Discord = require('discord.js');
+const { token } = require('./config.json')
 const { Console } = require('console');
 const {Client, MessageAttachment} = require('discord.js');
 const Bot = new Client();
-const token = 'NzIxNDMzNjYzNTMwODYwNjA1.XuUdoQ.4CDMQWndRy526YtMBi01a8L-OIA';
 const fs = require('fs');
 
 
